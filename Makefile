@@ -20,5 +20,13 @@ install:
 	${DOCKER_RUN} dataminr yarn install
 .PHONY: install
 
+lint:
+	${DOCKER_RUN} dataminr yarn lint
+.PHONY: lint
+
+lint-fix:
+	${DOCKER_RUN} dataminr yarn lint
+.PHONY: lint-fix
+
 dev: down up
 .PHONY: dev
