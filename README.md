@@ -17,3 +17,8 @@
 ## Running
 
 * `make dev`
+
+## Linting
+
+* `make lint`
+* `make lint-fix`
