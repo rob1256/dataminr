@@ -7,7 +7,7 @@ export interface IFeatureFlagAdditionalInput {
 export interface IFeatureFlag {
   title: string;
 
-  children?: this[];
+  childFeatureFlags?: this[];
 
   additionalInput?: IFeatureFlagAdditionalInput
 }

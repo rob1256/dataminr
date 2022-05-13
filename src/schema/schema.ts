@@ -46,7 +46,7 @@ export const schema: ISchema = {
           },
           {
             title: 'Users',
-            children: [
+            childFeatureFlags: [
               {
                 title: 'Users Add',
               },

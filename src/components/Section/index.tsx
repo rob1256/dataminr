@@ -7,13 +7,7 @@ import FeatureFlag from '../FeatureFlag';
 
 const Section: React.FC<ISection> = ({ title, featureFlagGroups }): ReactElement => (
   <div>
-    <h2
-      css={(theme) => css`
-        color: ${theme.textColors.sectionTitle};
-      `}
-    >
-      {title}
-    </h2>
+    <h2>{title}</h2>
     <div
       css={() => css`
         display: grid;
@@ -28,7 +22,12 @@ const Section: React.FC<ISection> = ({ title, featureFlagGroups }): ReactElement
             border-radius: 5px;
           `}
         >
-          {featureFlags.map((featureFlag) => <FeatureFlag title={featureFlag.title} />)}
+          {featureFlags.map((featureFlag) => (
+            <FeatureFlag
+              title={featureFlag.title}
+              childFeatureFlags={featureFlag.childFeatureFlags}
+            />
+          ))}
         </div>
       ))}
     </div>

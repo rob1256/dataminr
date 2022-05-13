@@ -24,8 +24,7 @@ const backgrounds = {
 };
 
 const textColors = {
-  sectionTitle: colors.white,
-  featureFlagTitle: colors.white,
+  default: colors.white,
 };
 
 const theme: Theme = {

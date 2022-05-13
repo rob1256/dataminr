@@ -23,8 +23,7 @@ declare module '@emotion/react' {
       group: string
     }
     textColors: {
-      sectionTitle: string
-      featureFlagTitle: string
+      default: string
     }
   }
 }

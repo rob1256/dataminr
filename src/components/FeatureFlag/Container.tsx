@@ -1,14 +1,10 @@
 import styled from '@emotion/styled';
 
 /**
- * Container to Feature Flag, mainly for styles
+ * Container to Feature Flag, mainly for toggle styles
  * Toggle styles were taken from react-toggle repo
  */
 const FeatureFlagContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 20px;
-  
   .react-toggle {
     touch-action: pan-x;
 
