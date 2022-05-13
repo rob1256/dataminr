@@ -25,7 +25,6 @@ const Section: React.FC<ISection> = ({ title, featureFlagGroups }): ReactElement
         <div
           css={(theme) => css`
             background-color: ${theme.backgrounds.group};
-            padding: 20px;
             border-radius: 5px;
           `}
         >

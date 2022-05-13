@@ -7,6 +7,7 @@ import styled from '@emotion/styled';
 const FeatureFlagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
+  padding: 20px;
   
   .react-toggle {
     touch-action: pan-x;
