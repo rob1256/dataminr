@@ -5,7 +5,8 @@ import styled from '@emotion/styled';
  * Toggle styles were taken from react-toggle repo
  */
 const FeatureFlagContainer = styled.div`
-  position: relative;
+  display: flex;
+  flex-wrap: wrap;
   
   .react-toggle {
     touch-action: pan-x;
@@ -44,15 +45,15 @@ const FeatureFlagContainer = styled.div`
     }
 
     &:hover:not(.react-toggle--disabled) .react-toggle-track {
-      background-color: ${(props) => props.theme.colors.darkGrey};
+      background-color: ${(props) => props.theme.states.featureFlagTrackHover};
     }
     
-    &--checked .react-toggle-track {
-      background-color: ${(props) => props.theme.colors.lightBlue};
+    &.react-toggle--checked .react-toggle-track {
+      background-color: ${(props) => props.theme.states.featureFlagTrackActive};
     }
     
     &--checked:hover:not(.react-toggle--disabled) .react-toggle-track {
-      background-color: ${(props) => props.theme.colors.darkBlue};
+      background-color: ${(props) => props.theme.states.featureFlagTrackActiveHover};
     }
 
     .react-toggle-track {
@@ -60,7 +61,7 @@ const FeatureFlagContainer = styled.div`
       height: 24px;
       padding: 0;
       border-radius: 30px;
-      background-color: ${(props) => props.theme.colors.lightGrey};
+      background-color: ${(props) => props.theme.states.featureFlagTrack};
       -webkit-transition: all 0.2s ease;
       -moz-transition: all 0.2s ease;
       transition: all 0.2s ease;

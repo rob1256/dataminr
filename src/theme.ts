@@ -1,12 +1,38 @@
 import { Theme } from '@emotion/react';
 
+const colors = {
+  white: '#FFFFFF',
+  black: '#000000',
+  lightBlue: '#1F71EEFF',
+  darkBlue: '#15448d',
+  lightGrey: '#909090',
+  darkGrey: '#5E5E5EFF',
+  darkSlate: '#0d0d0f',
+  lightSlate: '#27272a',
+};
+
+const states = {
+  featureFlagTrack: colors.lightGrey,
+  featureFlagTrackHover: colors.darkGrey,
+  featureFlagTrackActive: colors.lightBlue,
+  featureFlagTrackActiveHover: colors.darkBlue,
+};
+
+const backgrounds = {
+  main: colors.darkSlate,
+  group: colors.lightSlate,
+};
+
+const textColors = {
+  sectionTitle: colors.white,
+  featureFlagTitle: colors.white,
+};
+
 const theme: Theme = {
-  colors: {
-    lightBlue: '#1F71EEFF',
-    darkBlue: '#15448d',
-    lightGrey: '#909090',
-    darkGrey: '#5E5E5EFF',
-  },
+  colors,
+  states,
+  backgrounds,
+  textColors,
 };
 
 export default theme;
