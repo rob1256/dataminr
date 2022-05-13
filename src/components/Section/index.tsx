@@ -15,8 +15,9 @@ const Section: React.FC<ISection> = ({ title, featureFlagGroups }): ReactElement
         gap: 20px;
       `}
     >
-      {featureFlagGroups.map((featureFlags) => (
+      {featureFlagGroups.map((featureFlags, index) => (
         <div
+          key={`featureFlagGroup-${index}`} // eslint-disable-line react/no-array-index-key
           css={(theme) => css`
             background-color: ${theme.backgrounds.group};
             border-radius: 5px;
@@ -24,6 +25,7 @@ const Section: React.FC<ISection> = ({ title, featureFlagGroups }): ReactElement
         >
           {featureFlags.map((featureFlag) => (
             <FeatureFlag
+              key={`featureFlag-${featureFlag.title}`}
               title={featureFlag.title}
               childFeatureFlags={featureFlag.childFeatureFlags}
             />
