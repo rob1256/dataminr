@@ -1,26 +1,4 @@
-interface IFeatureFlagAdditionalInput {
-  type: 'dropdown';
-
-  options: number[];
-}
-
-interface IFeatureFlag {
-  title: string;
-
-  children?: this[];
-
-  additionalInput?: IFeatureFlagAdditionalInput
-}
-
-interface ISection {
-  title: string;
-
-  featureFlagGroups: IFeatureFlag[][];
-}
-
-interface ISchema {
-  sections: ISection[]
-}
+import { ISchema } from './types';
 
 const schema: ISchema = {
   sections: [
