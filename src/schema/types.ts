@@ -5,7 +5,11 @@ export interface IFeatureFlagAdditionalInput {
 }
 
 export interface IFeatureFlag {
+  id: string;
+
   title: string;
+
+  isChecked?: boolean;
 
   childFeatureFlags?: this[];
 

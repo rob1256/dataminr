@@ -26,6 +26,7 @@ const Section: React.FC<ISection> = ({ title, featureFlagGroups }): ReactElement
           {featureFlags.map((featureFlag) => (
             <FeatureFlag
               key={`featureFlag-${featureFlag.title}`}
+              id={featureFlag.id}
               title={featureFlag.title}
               childFeatureFlags={featureFlag.childFeatureFlags}
             />

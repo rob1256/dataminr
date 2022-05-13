@@ -1,10 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import React, { ReactElement, useState } from 'react';
 import { css } from '@emotion/react';
+import { useSelector } from 'react-redux';
 // @ts-ignore
 import Toggle from 'react-toggle';
 
 import { IFeatureFlag } from '../../schema';
+import { useAppDispatch } from '../../store/store';
+import { selectIsFlagChecked, toggleFeatureFlag } from '../../reducers/featureFlags';
 
 import FeatureFlagContainer from './Container';
 import DropdownIcon from './DropdownIcon';
@@ -16,10 +19,15 @@ const hasChildFeatureFlags = (childFeatureFlags: IFeatureFlag[] | undefined): bo
 ) as boolean;
 
 const FeatureFlag: React.FC<IFeatureFlag> = ({
+  id,
   title,
   childFeatureFlags,
 }): ReactElement => {
-  const [parentFeatureFlagIsChecked, setParentFeatureFlagIsChecked] = useState<boolean>(false);
+  const [parentFeatureFlagIsChecked] = useState<boolean>(false);
+
+  const isFlagChecked = useSelector(selectIsFlagChecked(id));
+  console.log({ id, isFlagChecked });
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -40,11 +48,10 @@ const FeatureFlag: React.FC<IFeatureFlag> = ({
         </span>
         <div>
           <Toggle
-            defaultChecked={false}
-            // checked={shouldBeChecked(parentFeatureFlagIsCheckedProp)}
             icons={false}
-              // @ts-ignore
-            onChange={(e) => setParentFeatureFlagIsChecked(e.target.checked)}
+            checked={isFlagChecked}
+            // @ts-ignore
+            onChange={(e) => dispatch(toggleFeatureFlag({ id, isChecked: e.target.checked }))}
           />
           {hasChildFeatureFlags(childFeatureFlags)
               && <DropdownIcon isOpen={parentFeatureFlagIsChecked} />}
@@ -57,12 +64,16 @@ const FeatureFlag: React.FC<IFeatureFlag> = ({
       >
         <div
           css={css`
-                padding-right: 40px;
-                padding-left: 40px;
-              `}
+            padding-right: 40px;
+            padding-left: 40px;
+          `}
         >
           {childFeatureFlags?.map((childFeatureFlag) => (
-            <FeatureFlag key={`featureFlag-${childFeatureFlag.title}`} title={childFeatureFlag.title} />
+            <FeatureFlag
+              key={`featureFlag-${childFeatureFlag.title}`}
+              id={childFeatureFlag.id}
+              title={childFeatureFlag.title}
+            />
           ))}
         </div>
       </FeatureFlagCSSTransitions>
