@@ -2,13 +2,15 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 
-import theme from './theme';
-import FeatureFlag from './components/FeatureFlag';
+import { schema, ISection } from './schema';
+
+import appTheme from './theme';
+import Section from './components/Section';
 
 const App = () => (
-  <ThemeProvider theme={theme}>
+  <ThemeProvider theme={appTheme}>
     <div className="app">
-      <FeatureFlag title="test" />
+      {schema.sections.map((section: ISection) => <Section key={`section-${section.title}`} title={section.title} featureFlagGroups={section.featureFlagGroups} />)}
     </div>
   </ThemeProvider>
 );
