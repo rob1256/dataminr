@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import { css } from '@emotion/react';
 import { useSelector } from 'react-redux';
 // @ts-ignore
@@ -18,15 +18,18 @@ const hasChildFeatureFlags = (childFeatureFlags: IFeatureFlag[] | undefined): bo
   && childFeatureFlags?.length > 0
 ) as boolean;
 
-const FeatureFlag: React.FC<IFeatureFlag> = ({
+interface IFeatureFlagComponent extends IFeatureFlag {
+  parentId?: string
+}
+
+// TODO: add input dropdown
+const FeatureFlag: React.FC<IFeatureFlagComponent> = ({
   id,
+  parentId,
   title,
   childFeatureFlags,
 }): ReactElement => {
-  const [parentFeatureFlagIsChecked] = useState<boolean>(false);
-
-  const isFlagChecked = useSelector(selectIsFlagChecked(id));
-  console.log({ id, isFlagChecked });
+  const isFlagChecked = useSelector(selectIsFlagChecked(id, parentId));
   const dispatch = useAppDispatch();
 
   return (
@@ -51,35 +54,42 @@ const FeatureFlag: React.FC<IFeatureFlag> = ({
             icons={false}
             checked={isFlagChecked}
             // @ts-ignore
-            onChange={(e) => dispatch(toggleFeatureFlag({ id, isChecked: e.target.checked }))}
+            onChange={(e) => dispatch(
+              toggleFeatureFlag({ id, parentId, isChecked: e.target.checked }),
+            )}
           />
           {hasChildFeatureFlags(childFeatureFlags)
-              && <DropdownIcon isOpen={parentFeatureFlagIsChecked} />}
+              && <DropdownIcon isOpen={isFlagChecked} />}
         </div>
       </FeatureFlagContainer>
 
       {hasChildFeatureFlags(childFeatureFlags) && (
-      <FeatureFlagCSSTransitions
-        inProp={(hasChildFeatureFlags(childFeatureFlags) && parentFeatureFlagIsChecked)}
-      >
-        <div
-          css={css`
-            padding-right: 40px;
-            padding-left: 40px;
-          `}
+        <FeatureFlagCSSTransitions
+          inProp={(hasChildFeatureFlags(childFeatureFlags) && isFlagChecked)}
         >
-          {childFeatureFlags?.map((childFeatureFlag) => (
-            <FeatureFlag
-              key={`featureFlag-${childFeatureFlag.title}`}
-              id={childFeatureFlag.id}
-              title={childFeatureFlag.title}
-            />
-          ))}
-        </div>
-      </FeatureFlagCSSTransitions>
+          <div
+            css={css`
+              padding-right: 40px;
+              padding-left: 40px;
+            `}
+          >
+            {childFeatureFlags?.map((childFeatureFlag) => (
+              <FeatureFlag
+                key={`featureFlag-${childFeatureFlag.title}`}
+                id={childFeatureFlag.id}
+                parentId={id}
+                title={childFeatureFlag.title}
+              />
+            ))}
+          </div>
+        </FeatureFlagCSSTransitions>
       )}
     </>
   );
+};
+
+FeatureFlag.defaultProps = {
+  parentId: undefined,
 };
 
 export default FeatureFlag;

@@ -1,4 +1,4 @@
-/* eslint-disable import/no-cycle */
+/* eslint-disable import/no-cycle, no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import * as R from 'ramda';
 
@@ -7,6 +7,24 @@ import {
   schema,
   IFeatureFlag,
 } from '../schema';
+
+export interface IFeatureFlagState {
+  flags: IFeatureFlag[],
+}
+
+export interface IToggleFeatureFlagActionPayload {
+  id: string
+
+  parentId?: string
+
+  isChecked: boolean
+}
+
+export interface IGetPathsToFlagsFromStateAndIds {
+  pathToTopLevelFlag: (string | number)[]
+
+  pathToChildFlag?: (string | number)[]
+}
 
 // @ts-ignore
 const getAndFlattenFeatureFlagGroupsInSchema = R.pipe(
@@ -22,46 +40,86 @@ const getAllFeatureFlagsFromSchema = R.pipe(
   R.flatten,
 );
 
-export interface IFeatureFlagState {
-  flags: IFeatureFlag[],
-}
-
 const initialState: IFeatureFlagState = {
   flags: getAllFeatureFlagsFromSchema(schema) as IFeatureFlag[],
 };
 
-export interface IToggleFeatureFlagActionPayload {
-  id: string;
+const getPathsToFlagsFromStateAndIds = (state: IFeatureFlagState, id: IFeatureFlag['id'], parentId: IFeatureFlag['id'] | undefined): IGetPathsToFlagsFromStateAndIds => {
+  const topLevelIdToUse = parentId || id;
+  // @ts-ignore
+  const indexOfTopLevelFlag = R.findIndex(R.propEq('id', topLevelIdToUse), state.flags);
+  const pathToTopLevelFlag = ['flags', indexOfTopLevelFlag] as (string | number)[];
 
-  parentId: string;
+  if (!parentId) {
+    return {
+      pathToTopLevelFlag,
+      pathToChildFlag: undefined,
+    };
+  }
 
-  isChecked: boolean
-}
+  const pathToChildFlag = [...pathToTopLevelFlag, 'childFeatureFlags'];
+
+  const indexOfChildFlag = R.pipe(
+    // @ts-ignore
+    R.path(pathToChildFlag),
+    R.findIndex(R.propEq('id', id)),
+  )(state) as number;
+
+  pathToChildFlag.push(indexOfChildFlag);
+
+  return {
+    pathToTopLevelFlag,
+    pathToChildFlag,
+  };
+};
 
 export const featureFlagsSlice = createSlice({
   name: 'featureFlags',
   initialState,
   reducers: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     toggleFeatureFlag: (
       state: IFeatureFlagState,
       action: PayloadAction<IToggleFeatureFlagActionPayload>,
     ) => {
-      const { flags } = state;
+      const { id, parentId, isChecked } = action.payload;
 
-      const indexOfFlag = R.findIndex(R.propEq('id', action.payload.id), flags);
+      const pathsToFlags = getPathsToFlagsFromStateAndIds(state, id, parentId);
 
-      return R.assocPath(['flags', indexOfFlag, 'isChecked'], action.payload.isChecked, state);
+      // @ts-ignore
+      const pathToFlag = R.ifElse(
+        () => !!parentId,
+        R.prop('pathToChildFlag'),
+        R.prop('pathToTopLevelFlag'),
+      )(pathsToFlags) as [];
+
+      const stateWithFlagStateChanged = R.assocPath([...pathToFlag, 'isChecked'], isChecked, state);
+
+      if (!parentId) {
+        // TODO: disable all children as well
+        const stateWithChildFlagsDisabled = R.pipe(
+          R.path([...pathToFlag, 'childFeatureFlags'])
+        )(stateWithFlagStateChanged);
+      }
+
+      return stateWithFlagStateChanged;
     },
   },
 });
 
 export const { toggleFeatureFlag } = featureFlagsSlice.actions;
 
-export const selectIsFlagChecked = (id: IFeatureFlag['id']) => (state: RootState) => {
-  const { flags } = state.featureFlags;
+export const selectIsFlagChecked = (id: IFeatureFlag['id'], parentId?: IFeatureFlag['id']) => (state: RootState) => {
+  const pathsToFlags = getPathsToFlagsFromStateAndIds(state.featureFlags, id, parentId);
 
-  const flag = R.find<IFeatureFlag>(R.propEq('id', id), flags);
+  // @ts-ignore
+  const pathToFlag = R.ifElse(
+    () => !!parentId,
+    R.prop('pathToChildFlag'),
+    R.prop('pathToTopLevelFlag'),
+  )(pathsToFlags);
+
+  // @ts-ignore
+  const flag = R.path<IFeatureFlag>(pathToFlag, state.featureFlags);
   return flag?.isChecked || false;
 };
 
