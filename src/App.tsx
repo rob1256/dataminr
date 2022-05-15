@@ -1,26 +1,24 @@
+/** @jsxImportSource @emotion/react */
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { css } from '@emotion/react';
+import { useSelector } from 'react-redux';
 
-function App() {
+import { ISection } from './schema';
+import { selectSchemaSections } from './reducers/schema';
+import Section from './components/Section';
+
+const App = () => {
+  const sections = useSelector(selectSchemaSections);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      css={(theme) => css`
+        color: ${theme.textColors.default};
+      `}
+    >
+      {sections.map((section: ISection) => <Section key={`section-${section.title}`} title={section.title} featureFlagGroups={section.featureFlagGroups} />)}
     </div>
   );
-}
+};
 
 export default App;

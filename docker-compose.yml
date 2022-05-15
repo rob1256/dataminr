@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  dataminr:
+    image: node:18-alpine3.14
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/dataminr:delegated
+    working_dir: /dataminr
+    command: yarn start

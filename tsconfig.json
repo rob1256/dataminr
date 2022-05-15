@@ -18,7 +18,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react"
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
   },
   "include": [
     "src"
