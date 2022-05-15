@@ -20,13 +20,6 @@ export interface IToggleFeatureFlagActionPayload {
   isChecked: boolean
 }
 
-export interface IGetPathsToFlagsFromStateAndIds {
-  pathToTopLevelFlag: (string | number)[]
-
-  pathToChildFlag?: (string | number)[]
-}
-
-// @ts-ignore
 const getAndFlattenFeatureFlagGroupsInSchema = R.pipe(
   R.prop('featureFlagGroups'),
   // @ts-ignore
@@ -44,17 +37,14 @@ const initialState: IFeatureFlagState = {
   flags: getAllFeatureFlagsFromSchema(schema) as IFeatureFlag[],
 };
 
-const getPathsToFlagsFromStateAndIds = (state: IFeatureFlagState, id: IFeatureFlag['id'], parentId: IFeatureFlag['id'] | undefined): IGetPathsToFlagsFromStateAndIds => {
+const getPathToFlagFromStateAndIds = (state: IFeatureFlagState, id: IFeatureFlag['id'], parentId: IFeatureFlag['id'] | undefined): (string | number)[] => {
   const topLevelIdToUse = parentId || id;
   // @ts-ignore
   const indexOfTopLevelFlag = R.findIndex(R.propEq('id', topLevelIdToUse), state.flags);
   const pathToTopLevelFlag = ['flags', indexOfTopLevelFlag] as (string | number)[];
 
   if (!parentId) {
-    return {
-      pathToTopLevelFlag,
-      pathToChildFlag: undefined,
-    };
+    return pathToTopLevelFlag;
   }
 
   const pathToChildFlag = [...pathToTopLevelFlag, 'childFeatureFlags'];
@@ -67,10 +57,7 @@ const getPathsToFlagsFromStateAndIds = (state: IFeatureFlagState, id: IFeatureFl
 
   pathToChildFlag.push(indexOfChildFlag);
 
-  return {
-    pathToTopLevelFlag,
-    pathToChildFlag,
-  };
+  return pathToChildFlag;
 };
 
 export const featureFlagsSlice = createSlice({
@@ -83,22 +70,23 @@ export const featureFlagsSlice = createSlice({
     ) => {
       const { id, parentId, isChecked } = action.payload;
 
-      const pathsToFlags = getPathsToFlagsFromStateAndIds(state, id, parentId);
-
-      // @ts-ignore
-      const pathToFlag = R.ifElse(
-        () => !!parentId,
-        R.prop('pathToChildFlag'),
-        R.prop('pathToTopLevelFlag'),
-      )(pathsToFlags) as [];
-
+      const pathToFlag = getPathToFlagFromStateAndIds(state, id, parentId);
       const stateWithFlagStateChanged = R.assocPath([...pathToFlag, 'isChecked'], isChecked, state);
 
-      if (!parentId) {
-        // TODO: disable all children as well
-        const stateWithChildFlagsDisabled = R.pipe(
-          R.path([...pathToFlag, 'childFeatureFlags'])
+      // We are disabling a parent flag, so disable all children
+      if (!parentId && !isChecked) {
+        const pathToChildFeatureFlags = [...pathToFlag, 'childFeatureFlags'];
+
+        const childFlagsDisabled = R.pipe(
+          R.path(pathToChildFeatureFlags),
+          // @ts-ignore
+          R.map(R.assoc('isChecked', false)),
         )(stateWithFlagStateChanged);
+
+        return R.assocPath(
+          pathToChildFeatureFlags,
+          childFlagsDisabled,
+        )(stateWithFlagStateChanged) as IFeatureFlagState;
       }
 
       return stateWithFlagStateChanged;
@@ -109,16 +97,7 @@ export const featureFlagsSlice = createSlice({
 export const { toggleFeatureFlag } = featureFlagsSlice.actions;
 
 export const selectIsFlagChecked = (id: IFeatureFlag['id'], parentId?: IFeatureFlag['id']) => (state: RootState) => {
-  const pathsToFlags = getPathsToFlagsFromStateAndIds(state.featureFlags, id, parentId);
-
-  // @ts-ignore
-  const pathToFlag = R.ifElse(
-    () => !!parentId,
-    R.prop('pathToChildFlag'),
-    R.prop('pathToTopLevelFlag'),
-  )(pathsToFlags);
-
-  // @ts-ignore
+  const pathToFlag = getPathToFlagFromStateAndIds(state.featureFlags, id, parentId);
   const flag = R.path<IFeatureFlag>(pathToFlag, state.featureFlags);
   return flag?.isChecked || false;
 };
