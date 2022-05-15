@@ -1,4 +1,4 @@
-# Dataminr Code Test
+# Dataminr
 
 ## Requirements
 
@@ -22,3 +22,12 @@
 
 * `make lint`
 * `make lint-fix`
+
+## Improvements
+
+* Unit testing functions
+* Unit testing UI components using something like `react-testing-library`
+* End-To-End testing with something like CypressJS
+* Look at potential improvements to schema
+* Get rid of ts-ignore comments (these were added for the sake of speed)
+* Improve child open/close transitions
