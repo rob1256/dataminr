@@ -12,6 +12,7 @@ import { selectIsFlagChecked, toggleFeatureFlag } from '../../reducers/featureFl
 import FeatureFlagContainer from './Container';
 import DropdownIcon from './DropdownIcon';
 import FeatureFlagCSSTransitions from './CSSTransition';
+import AdditionalInput from './AdditionalInput';
 
 const hasChildFeatureFlags = (childFeatureFlags: IFeatureFlag[] | undefined): boolean => (
   childFeatureFlags
@@ -28,6 +29,7 @@ const FeatureFlag: React.FC<IFeatureFlagComponent> = ({
   parentId,
   title,
   childFeatureFlags,
+  additionalInput,
 }): ReactElement => {
   const isFlagChecked = useSelector(selectIsFlagChecked(id, parentId));
   const dispatch = useAppDispatch();
@@ -49,6 +51,10 @@ const FeatureFlag: React.FC<IFeatureFlagComponent> = ({
         >
           {title}
         </span>
+        {additionalInput && (
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          <AdditionalInput {...additionalInput} />
+        )}
         <div>
           <Toggle
             icons={false}

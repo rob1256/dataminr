@@ -13,7 +13,6 @@ const App = () => {
   return (
     <div
       css={(theme) => css`
-        background-color: ${theme.backgrounds.main};
         color: ${theme.textColors.default};
       `}
     >

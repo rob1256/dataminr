@@ -21,6 +21,8 @@ declare module '@emotion/react' {
     backgrounds: {
       main: string
       group: string
+      selectControl: string
+      selectOptionFocused: string
     }
     textColors: {
       default: string

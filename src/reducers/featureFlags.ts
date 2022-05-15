@@ -78,7 +78,7 @@ export const featureFlagsSlice = createSlice({
         const pathToChildFeatureFlags = [...pathToFlag, 'childFeatureFlags'];
 
         const childFlagsDisabled = R.pipe(
-          R.path(pathToChildFeatureFlags),
+          R.pathOr([], pathToChildFeatureFlags),
           // @ts-ignore
           R.map(R.assoc('isChecked', false)),
         )(stateWithFlagStateChanged);

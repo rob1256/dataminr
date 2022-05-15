@@ -21,6 +21,8 @@ const states = {
 const backgrounds = {
   main: colors.darkSlate,
   group: colors.lightSlate,
+  selectControl: colors.darkSlate,
+  selectOptionFocused: colors.lightSlate,
 };
 
 const textColors = {

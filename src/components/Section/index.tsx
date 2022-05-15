@@ -29,6 +29,7 @@ const Section: React.FC<ISection> = ({ title, featureFlagGroups }): ReactElement
               id={featureFlag.id}
               title={featureFlag.title}
               childFeatureFlags={featureFlag.childFeatureFlags}
+              additionalInput={featureFlag.additionalInput}
             />
           ))}
         </div>
